@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const markets = [
   { pair: "BTC/USD", price: "43,567.89", change: 2.34 },
