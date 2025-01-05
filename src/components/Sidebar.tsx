@@ -1,5 +1,6 @@
 import { Home, LineChart, Settings, Menu } from "lucide-react";
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -10,6 +11,7 @@ const menuItems = [
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
 
   return (
     <div className={cn(
@@ -27,14 +29,17 @@ export function Sidebar() {
       </div>
       <nav className="p-2">
         {menuItems.map((item) => (
-          <a
+          <Link
             key={item.label}
-            href={item.href}
-            className="flex items-center gap-3 p-3 hover:bg-secondary rounded-md text-foreground/80 hover:text-foreground transition-colors"
+            to={item.href}
+            className={cn(
+              "flex items-center gap-3 p-3 hover:bg-secondary rounded-md text-foreground/80 hover:text-foreground transition-colors",
+              location.pathname === item.href && "bg-secondary text-foreground"
+            )}
           >
             <item.icon size={20} />
             {!collapsed && <span>{item.label}</span>}
-          </a>
+          </Link>
         ))}
       </nav>
     </div>
