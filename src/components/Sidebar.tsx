@@ -17,13 +17,20 @@ export function Sidebar() {
 
   const handleLogout = async () => {
     try {
+      // First clear any existing session
+      const { error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      // Then perform the signOut
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+
+      // Only show success and navigate if no errors occurred
       toast.success("Logged out successfully");
       navigate("/landing");
-    } catch (error) {
-      toast.error("Error logging out");
-      console.error("Error:", error);
+    } catch (error: any) {
+      console.error("Logout error:", error);
+      toast.error(error.message || "Error logging out");
     }
   };
 
