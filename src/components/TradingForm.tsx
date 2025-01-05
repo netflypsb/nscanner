@@ -46,12 +46,19 @@ export function TradingForm() {
   const onSubmit = async (values: TradingFormValues) => {
     setIsLoading(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
       const { error } = await supabase.from("trade_logs").insert({
         pair: values.pair,
         amount: parseFloat(values.amount),
         trade_type: values.tradeType,
         price: 0, // This would come from the actual exchange rate
         status: "PENDING", // Initial status
+        user_id: user.id
       });
 
       if (error) throw error;
