@@ -19,7 +19,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
 
 type TradingFormValues = {
   pair: string;
@@ -81,87 +91,104 @@ export function TradingForm() {
   };
 
   return (
-    <Card className="p-6">
-      <h2 className="text-lg font-semibold mb-4">New Trade</h2>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="pair"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Trading Pair</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+    <Card>
+      <CardHeader>
+        <CardTitle>New Trade</CardTitle>
+        <CardDescription>
+          Submit a new trade order for your selected trading pair
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="pair"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Trading Pair</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select trading pair" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {tradingPairs.map((pair) => (
+                        <SelectItem key={pair.value} value={pair.value}>
+                          {pair.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select trading pair" />
-                    </SelectTrigger>
+                    <Input
+                      type="number"
+                      step="0.00000001"
+                      placeholder="Enter amount"
+                      {...field}
+                    />
                   </FormControl>
-                  <SelectContent>
-                    {tradingPairs.map((pair) => (
-                      <SelectItem key={pair.value} value={pair.value}>
-                        {pair.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="amount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Amount</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    step="0.00000001"
-                    placeholder="Enter amount"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="tradeType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Trade Type</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+            <FormField
+              control={form.control}
+              name="tradeType"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Trade Type</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select trade type" />
-                    </SelectTrigger>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex space-x-4"
+                    >
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <RadioGroupItem value="BUY" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Buy
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <RadioGroupItem value="SELL" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Sell
+                        </FormLabel>
+                      </FormItem>
+                    </RadioGroup>
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="BUY">Buy</SelectItem>
-                    <SelectItem value="SELL">Sell</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Submitting..." : "Submit Trade"}
-          </Button>
-        </form>
-      </Form>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Submitting..." : "Submit Trade"}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
     </Card>
   );
 }
