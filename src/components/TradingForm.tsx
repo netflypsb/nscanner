@@ -15,9 +15,11 @@ import { AmountInput } from "./trading/AmountInput";
 import { TradeTypeSelect } from "./trading/TradeTypeSelect";
 import { TradingFormValues } from "./trading/types";
 import { useTradingPairs } from "./trading/useTradingPairs";
+import { useBinanceTrading } from "@/hooks/useBinanceTrading";
 
 export function TradingForm() {
   const { tradingPairs, isLoading: isPairsLoading } = useTradingPairs();
+  const { executeTrade, isLoading: isTrading } = useBinanceTrading();
   const { toast } = useToast();
   const form = useForm<TradingFormValues>({
     defaultValues: {
@@ -29,35 +31,15 @@ export function TradingForm() {
 
   const onSubmit = async (values: TradingFormValues) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error("User not authenticated");
-      }
-
-      const { error } = await supabase.from("trade_logs").insert({
+      await executeTrade({
         pair: values.pair,
-        amount: parseFloat(values.amount),
-        trade_type: values.tradeType,
-        price: 0, // This would come from the actual exchange rate
-        status: "PENDING", // Initial status
-        user_id: user.id
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Trade submitted",
-        description: `${values.tradeType} order for ${values.amount} ${values.pair} has been submitted.`,
+        amount: values.amount,
+        tradeType: values.tradeType,
       });
 
       form.reset();
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to submit trade. Please try again.",
-        variant: "destructive",
-      });
+      console.error("Trade execution error:", error);
     }
   };
 
@@ -78,9 +60,9 @@ export function TradingForm() {
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={isPairsLoading}
+              disabled={isPairsLoading || isTrading}
             >
-              {isPairsLoading ? "Loading..." : "Submit Trade"}
+              {isTrading ? "Executing Trade..." : "Submit Trade"}
             </Button>
           </form>
         </Form>
