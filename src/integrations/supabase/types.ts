@@ -9,7 +9,137 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          luno_api_key: string | null
+          luno_api_secret: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          luno_api_key?: string | null
+          luno_api_secret?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          luno_api_key?: string | null
+          luno_api_secret?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      strategies: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          long_ma_length: number
+          long_ma_type: Database["public"]["Enums"]["ma_type"]
+          medium_ma_length: number
+          medium_ma_type: Database["public"]["Enums"]["ma_type"]
+          name: string
+          short_ma_length: number
+          short_ma_type: Database["public"]["Enums"]["ma_type"]
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          long_ma_length: number
+          long_ma_type: Database["public"]["Enums"]["ma_type"]
+          medium_ma_length: number
+          medium_ma_type: Database["public"]["Enums"]["ma_type"]
+          name: string
+          short_ma_length: number
+          short_ma_type: Database["public"]["Enums"]["ma_type"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          long_ma_length?: number
+          long_ma_type?: Database["public"]["Enums"]["ma_type"]
+          medium_ma_length?: number
+          medium_ma_type?: Database["public"]["Enums"]["ma_type"]
+          name?: string
+          short_ma_length?: number
+          short_ma_type?: Database["public"]["Enums"]["ma_type"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strategies_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trade_logs: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          pair: string
+          price: number
+          status: string
+          strategy_id: string | null
+          trade_type: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          pair: string
+          price: number
+          status: string
+          strategy_id?: string | null
+          trade_type: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          pair?: string
+          price?: number
+          status?: string
+          strategy_id?: string | null
+          trade_type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_logs_strategy_id_fkey"
+            columns: ["strategy_id"]
+            isOneToOne: false
+            referencedRelation: "strategies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trade_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +148,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      ma_type: "SMA" | "EMA" | "WMA" | "HMA"
     }
     CompositeTypes: {
       [_ in never]: never
