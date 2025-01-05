@@ -29,8 +29,7 @@ export function TradingStrategyForm() {
   const handleSave = async () => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.from("strategies").insert({
-        name,
+      const { error } = await supabase.from("strategies").insert([{
         short_ma_type: shortMaType,
         short_ma_length: parseInt(shortMaLength),
         medium_ma_type: mediumMaType,
@@ -38,8 +37,9 @@ export function TradingStrategyForm() {
         long_ma_type: longMaType,
         long_ma_length: parseInt(longMaLength),
         is_active: true,
+        name: name,
         user_id: (await supabase.auth.getUser()).data.user?.id,
-      });
+      }]);
 
       if (error) throw error;
 
