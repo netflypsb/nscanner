@@ -13,15 +13,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const MA_TYPES = ["SMA", "EMA", "WMA", "HMA"] as const;
+// Define MA types to match the database enum
+type MAType = "SMA" | "EMA" | "WMA" | "HMA";
+const MA_TYPES: MAType[] = ["SMA", "EMA", "WMA", "HMA"];
 
 export function TradingStrategyForm() {
   const [name, setName] = useState("");
-  const [shortMaType, setShortMaType] = useState<string>("SMA");
+  const [shortMaType, setShortMaType] = useState<MAType>("SMA");
   const [shortMaLength, setShortMaLength] = useState("10");
-  const [mediumMaType, setMediumMaType] = useState<string>("EMA");
+  const [mediumMaType, setMediumMaType] = useState<MAType>("EMA");
   const [mediumMaLength, setMediumMaLength] = useState("20");
-  const [longMaType, setLongMaType] = useState<string>("WMA");
+  const [longMaType, setLongMaType] = useState<MAType>("WMA");
   const [longMaLength, setLongMaLength] = useState("50");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -29,7 +31,11 @@ export function TradingStrategyForm() {
   const handleSave = async () => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.from("strategies").insert([{
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) throw new Error("No user found");
+
+      const { error } = await supabase.from("strategies").insert({
         short_ma_type: shortMaType,
         short_ma_length: parseInt(shortMaLength),
         medium_ma_type: mediumMaType,
@@ -37,9 +43,9 @@ export function TradingStrategyForm() {
         long_ma_type: longMaType,
         long_ma_length: parseInt(longMaLength),
         is_active: true,
-        name: name,
-        user_id: (await supabase.auth.getUser()).data.user?.id,
-      }]);
+        name,
+        user_id: user.id,
+      });
 
       if (error) throw error;
 
@@ -67,7 +73,7 @@ export function TradingStrategyForm() {
     }
   };
 
-  const MATypeSelect = ({ value, onChange, label }: { value: string; onChange: (value: string) => void; label: string }) => (
+  const MATypeSelect = ({ value, onChange, label }: { value: MAType; onChange: (value: MAType) => void; label: string }) => (
     <div className="space-y-2">
       <Label>{label}</Label>
       <Select value={value} onValueChange={onChange}>
