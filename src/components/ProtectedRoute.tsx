@@ -13,7 +13,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       setSession(session);
       setLoading(false);
       if (!session) {
-        navigate("/auth");
+        navigate("/landing");
       }
     });
 
@@ -22,7 +22,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       if (!session) {
-        navigate("/auth");
+        navigate("/landing");
       }
     });
 

@@ -16,6 +16,14 @@ export function Landing() {
         navigate("/");
       }
     });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        navigate("/");
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   return (

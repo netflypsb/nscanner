@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { Landing } from "@/pages/Landing";
 import { Index } from "@/pages/Index";
 import Settings from "@/pages/Settings";
-import Auth from "@/pages/Auth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 function App() {
@@ -10,7 +9,6 @@ function App() {
     <Router>
       <Routes>
         <Route path="/landing" element={<Landing />} />
-        <Route path="/auth" element={<Auth />} />
         <Route
           path="/"
           element={
