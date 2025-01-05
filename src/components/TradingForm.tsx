@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,13 +37,14 @@ type TradingFormValues = {
   tradeType: "BUY" | "SELL";
 };
 
-const tradingPairs = [
-  { value: "XBTZAR", label: "BTC/ZAR" },
-  { value: "ETHZAR", label: "ETH/ZAR" },
-];
+type TradingPair = {
+  value: string;
+  label: string;
+};
 
 export function TradingForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [tradingPairs, setTradingPairs] = useState<TradingPair[]>([]);
   const { toast } = useToast();
   const form = useForm<TradingFormValues>({
     defaultValues: {
@@ -52,6 +53,40 @@ export function TradingForm() {
       tradeType: "BUY",
     },
   });
+
+  useEffect(() => {
+    const fetchTradingPairs = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-trading-pairs`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch trading pairs');
+        }
+
+        const pairs = await response.json();
+        setTradingPairs(pairs);
+      } catch (error) {
+        console.error('Error fetching trading pairs:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load trading pairs. Please check your API credentials in settings.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchTradingPairs();
+  }, [toast]);
 
   const onSubmit = async (values: TradingFormValues) => {
     setIsLoading(true);
