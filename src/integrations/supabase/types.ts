@@ -11,6 +11,8 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          binance_api_key: string | null
+          binance_api_secret: string | null
           created_at: string
           email: string | null
           id: string
@@ -19,6 +21,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          binance_api_key?: string | null
+          binance_api_secret?: string | null
           created_at?: string
           email?: string | null
           id: string
@@ -27,6 +31,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          binance_api_key?: string | null
+          binance_api_secret?: string | null
           created_at?: string
           email?: string | null
           id?: string
