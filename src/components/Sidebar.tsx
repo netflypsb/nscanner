@@ -1,11 +1,10 @@
-import { Home, LineChart, Settings, Menu } from "lucide-react";
+import { Home, Settings, Menu } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
   { icon: Home, label: "Dashboard", href: "/" },
-  { icon: LineChart, label: "Trading", href: "/trading" },
   { icon: Settings, label: "Settings", href: "/settings" },
 ];
 
