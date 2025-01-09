@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { RotateCw, RotateCcw, Crop, Pen, Highlighter, FileText } from 'lucide-react';
+import { RotateCw, RotateCcw, Crop, Pen, Highlighter, FileText, Eraser } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
@@ -9,10 +9,18 @@ import { Progress } from "@/components/ui/progress";
 interface DocumentToolbarProps {
   onRotateLeft: () => void;
   onRotateRight: () => void;
+  onToolSelect: (tool: 'highlight' | 'text' | 'drawing' | 'eraser' | null) => void;
+  selectedTool: 'highlight' | 'text' | 'drawing' | 'eraser' | null;
   documentId?: string;
 }
 
-const DocumentToolbar = ({ onRotateLeft, onRotateRight, documentId }: DocumentToolbarProps) => {
+const DocumentToolbar = ({ 
+  onRotateLeft, 
+  onRotateRight, 
+  onToolSelect,
+  selectedTool,
+  documentId 
+}: DocumentToolbarProps) => {
   const { toast } = useToast();
   const [ocrProgress, setOcrProgress] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -98,27 +106,69 @@ const DocumentToolbar = ({ onRotateLeft, onRotateRight, documentId }: DocumentTo
           </Tooltip>
         </TooltipProvider>
 
+        <div className="h-6 w-px bg-border" />
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Pen className="h-4 w-4" />
+              <Button 
+                variant={selectedTool === 'highlight' ? 'default' : 'outline'} 
+                size="icon"
+                onClick={() => onToolSelect(selectedTool === 'highlight' ? null : 'highlight')}
+              >
+                <Highlighter className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Annotate</TooltipContent>
+            <TooltipContent>Highlight Text</TooltipContent>
           </Tooltip>
         </TooltipProvider>
 
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Highlighter className="h-4 w-4" />
+              <Button 
+                variant={selectedTool === 'text' ? 'default' : 'outline'} 
+                size="icon"
+                onClick={() => onToolSelect(selectedTool === 'text' ? null : 'text')}
+              >
+                <FileText className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Highlight</TooltipContent>
+            <TooltipContent>Add Text</TooltipContent>
           </Tooltip>
         </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant={selectedTool === 'drawing' ? 'default' : 'outline'} 
+                size="icon"
+                onClick={() => onToolSelect(selectedTool === 'drawing' ? null : 'drawing')}
+              >
+                <Pen className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Draw</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant={selectedTool === 'eraser' ? 'default' : 'outline'} 
+                size="icon"
+                onClick={() => onToolSelect(selectedTool === 'eraser' ? null : 'eraser')}
+              >
+                <Eraser className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Erase</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <div className="h-6 w-px bg-border" />
 
         <TooltipProvider>
           <Tooltip>
