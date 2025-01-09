@@ -1,4 +1,4 @@
-import { createWorker } from 'tesseract.js';
+import { createWorker, Worker, RecognizeResult } from 'tesseract.js';
 
 export type OCRProgressCallback = (progress: number) => void;
 
@@ -6,22 +6,20 @@ export async function performOCR(
   imageUrl: string, 
   onProgress?: OCRProgressCallback
 ): Promise<string> {
-  const worker = await createWorker();
+  const worker = await createWorker() as Worker;
 
   try {
     await worker.load();
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
     
-    const { data } = await worker.recognize(imageUrl, {
-      logger: m => {
-        if (m.status === 'recognizing text') {
-          onProgress?.(m.progress);
-        }
-      }
-    });
+    const result = await worker.recognize(imageUrl);
     
-    return data.text;
+    if (onProgress) {
+      onProgress(1); // Signal completion
+    }
+    
+    return result.data.text;
   } catch (error) {
     console.error('OCR Error:', error);
     throw new Error('Failed to perform OCR');
