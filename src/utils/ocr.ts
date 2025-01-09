@@ -6,26 +6,26 @@ export async function performOCR(
   imageUrl: string, 
   onProgress?: OCRProgressCallback
 ): Promise<string> {
-  const worker = createWorker();
+  const worker = await createWorker();
 
   try {
     await worker.load();
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
     
-    const { data: { text } } = await worker.recognize(imageUrl, {
+    const { data } = await worker.recognize(imageUrl, {
       logger: m => {
         if (m.status === 'recognizing text') {
           onProgress?.(m.progress);
         }
-      },
+      }
     });
     
-    await worker.terminate();
-    return text;
+    return data.text;
   } catch (error) {
     console.error('OCR Error:', error);
+    throw new Error('Failed to perform OCR');
+  } finally {
     await worker.terminate();
-    throw new Error('OCR processing failed');
   }
 }
