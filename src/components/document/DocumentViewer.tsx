@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ZoomIn, ZoomOut } from 'lucide-react';
 import DocumentToolbar from './DocumentToolbar';
 import DocumentSidebar from './DocumentSidebar';
 import ExportDialog from './ExportDialog';
-import { cn } from '@/lib/utils';
+import ZoomControls from './viewer/ZoomControls';
+import DocumentPreview from './viewer/DocumentPreview';
+import Pagination from './viewer/Pagination';
 import { supabase } from "@/integrations/supabase/client";
 
 const DocumentViewer = () => {
@@ -46,82 +44,31 @@ const DocumentViewer = () => {
   return (
     <div className="flex h-screen bg-background">
       <main className="flex-1 flex flex-col">
-        {/* Top Toolbar */}
         <DocumentToolbar 
           onRotateLeft={handleRotateLeft}
           onRotateRight={handleRotateRight}
           documentId={documentId}
         />
 
-        {/* Main Content Area */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Document Viewer */}
           <div className="flex-1 flex flex-col items-center p-4 overflow-auto">
-            <div className="flex gap-2 mb-4">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" onClick={handleZoomOut}>
-                      <ZoomOut className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Zoom Out</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <span className="flex items-center px-2">{zoom}%</span>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" onClick={handleZoomIn}>
-                      <ZoomIn className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Zoom In</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <ZoomControls 
+              zoom={zoom}
+              onZoomIn={handleZoomIn}
+              onZoomOut={handleZoomOut}
+            />
 
-            {/* Document Preview */}
-            <div 
-              className={cn(
-                "w-[21cm] h-[29.7cm] bg-white shadow-lg",
-                "transform transition-transform duration-200"
-              )}
-              style={{ 
-                transform: `scale(${zoom/100}) rotate(${rotation}deg)`,
-                transformOrigin: 'center center'
-              }}
-            >
-              {/* Placeholder for actual document content */}
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                Document Preview
-              </div>
-            </div>
+            <DocumentPreview zoom={zoom} rotation={rotation} />
 
-            {/* Pagination */}
-            <div className="flex items-center gap-4 mt-4">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              <span>Page {currentPage}</span>
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(prev => prev + 1)}
-              >
-                Next
-              </Button>
-            </div>
+            <Pagination 
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            />
           </div>
 
-          {/* Right Sidebar */}
           <DocumentSidebar document={document} />
         </div>
 
-        {/* Bottom Bar */}
         <div className="border-t bg-background p-4 flex justify-between items-center">
           <div className="flex gap-2">
             <ExportDialog 
