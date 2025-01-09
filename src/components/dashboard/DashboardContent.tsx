@@ -1,6 +1,5 @@
 import React from "react"
-import { Camera, Upload, Layout } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { FileText } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -81,76 +80,73 @@ export function DashboardContent() {
   }
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <Alert className="mb-4">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 bg-steampunk-gradient min-h-screen">
+      <Alert className="mb-4 border-brass bg-steampunk-light/50 text-brass-light">
         <AlertDescription>
           OCR processing: Invoice-2024-001.pdf (2/3 pages complete)
         </AlertDescription>
       </Alert>
 
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <div className="flex items-center gap-2">
-          <Button>
-            <Camera className="mr-2 h-4 w-4" />
-            New Scan
-          </Button>
-          <Button variant="outline">
-            <Upload className="mr-2 h-4 w-4" />
-            Upload File
-          </Button>
-          <Button variant="outline">
-            <Layout className="mr-2 h-4 w-4" />
-            Create Template
-          </Button>
+        <div className="space-y-1">
+          <h2 className="text-3xl font-cinzel text-brass tracking-wide">Dashboard</h2>
+          <p className="text-copper-light text-sm">Welcome to your document management center</p>
         </div>
       </div>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h3 className="text-xl font-semibold">Documents</h3>
+            <h3 className="text-xl font-cinzel text-brass-light">Documents</h3>
             {selectedDocs.length > 0 && (
-              <Button
-                variant="destructive"
-                size="sm"
+              <button
                 onClick={handleDeleteSelected}
+                className="px-4 py-2 text-sm bg-copper/20 border border-copper text-copper-light
+                         hover:bg-copper/30 hover:border-copper-light hover:text-brass-light
+                         transition-all duration-300 rounded-md animate-glow"
               >
                 Delete Selected ({selectedDocs.length})
-              </Button>
+              </button>
             )}
           </div>
-          <Button variant="link">View All Documents</Button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
-            <div>Loading documents...</div>
+            <div className="text-brass-light">Loading documents...</div>
           ) : documents?.length === 0 ? (
-            <div>No documents found</div>
+            <div className="text-brass-light">No documents found</div>
           ) : (
             documents?.map((doc) => (
-              <Card key={doc.id} className="group relative">
+              <Card 
+                key={doc.id} 
+                className="group relative border-copper/50 bg-steampunk-light/80 
+                         hover:border-brass transition-all duration-300
+                         hover:shadow-[0_0_15px_rgba(218,165,32,0.3)]"
+              >
                 <div className="absolute top-2 left-2 z-10">
                   <Checkbox
                     checked={selectedDocs.includes(doc.id)}
                     onCheckedChange={() => handleSelectDocument(doc.id)}
+                    className="border-copper data-[state=checked]:border-brass 
+                             data-[state=checked]:bg-brass"
                   />
                 </div>
                 <CardHeader className="p-4">
-                  <CardTitle className="text-sm font-medium">
+                  <CardTitle className="text-sm font-medium text-brass-light">
                     {doc.name}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
-                  <div className="aspect-[3/4] rounded-lg border bg-muted">
-                    <img
-                      src={doc.thumbnail}
-                      alt={doc.name}
-                      className="h-full w-full object-cover"
-                    />
+                  <div className="aspect-[3/4] rounded-lg border border-copper/30 bg-steampunk-dark/50
+                               group-hover:border-brass/30 transition-all duration-300">
+                    <div className="h-full w-full flex items-center justify-center">
+                      <FileText className="h-12 w-12 text-copper-light group-hover:text-brass-light
+                                       transition-all duration-300" />
+                    </div>
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className="mt-2 text-sm text-copper-light group-hover:text-brass-light
+                             transition-all duration-300">
                     Last modified: {doc.modifiedDate}
                   </p>
                 </CardContent>

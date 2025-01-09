@@ -19,17 +19,37 @@ export default {
     },
     extend: {
       colors: {
-        primary: {
-          DEFAULT: "#007bff",
-          hover: "#0056b3",
+        brass: {
+          light: "#FFD700",
+          DEFAULT: "#DAA520",
+          dark: "#B8860B",
         },
-        secondary: "#f8f9fa",
-        accent: "#6c757d",
+        copper: {
+          light: "#CD853F",
+          DEFAULT: "#8B4513",
+          dark: "#6B4423",
+        },
+        neon: {
+          blue: "#00FFFF",
+          green: "#32CD32",
+        },
+        steampunk: {
+          dark: "#121212",
+          light: "#2C2C2C",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "var(--primary)",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
@@ -38,14 +58,14 @@ export default {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
       },
       fontFamily: {
+        cinzel: ["Cinzel", "serif"],
         roboto: ["Roboto", "sans-serif"],
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
         "accordion-down": {
@@ -56,20 +76,23 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "fade-in": {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
+        "gear-spin": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
         },
-        "slide-in": {
-          "0%": { transform: "translateX(-100%)" },
-          "100%": { transform: "translateX(0)" },
+        glow: {
+          "0%, 100%": { filter: "brightness(100%)" },
+          "50%": { filter: "brightness(150%)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.5s ease-out",
-        "slide-in": "slide-in 0.5s ease-out",
+        "gear-spin": "gear-spin 10s linear infinite",
+        glow: "glow 2s ease-in-out infinite",
+      },
+      backgroundImage: {
+        "steampunk-gradient": "linear-gradient(to bottom, #2C2C2C, #121212)",
       },
     },
   },
