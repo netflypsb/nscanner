@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import Webcam from 'react-webcam';
-import { Camera, RotateCcw, Save, CornerUpLeft, CornerUpRight, CornerDownLeft, CornerDownRight, Toggle } from 'lucide-react';
+import { Camera, RotateCcw, Save, CornerUpLeft, CornerUpRight, CornerDownLeft, CornerDownRight, ToggleLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Toggle as ToggleButton } from '@/components/ui/toggle';
 import { Progress } from '@/components/ui/progress';
@@ -75,7 +75,7 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
           pressed={isSmartDetectionEnabled}
           onPressedChange={setIsSmartDetectionEnabled}
         >
-          <Toggle className="mr-2 h-4 w-4" />
+          <ToggleLeft className="mr-2 h-4 w-4" />
           Smart Border Detection
         </ToggleButton>
       </div>
