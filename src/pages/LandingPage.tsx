@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { scan, folderOpen, share } from "lucide-react";
+import { Scan, FolderOpen, Share2 } from "lucide-react";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -40,21 +40,21 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
-                <scan className="w-8 h-8 text-primary" />
+                <Scan className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Scan Your Documents</h3>
               <p className="text-gray-600">Quickly digitize paper documents using your camera or uploaded files.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
-                <folderOpen className="w-8 h-8 text-primary" />
+                <FolderOpen className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Organize and Annotate</h3>
               <p className="text-gray-600">Effortlessly sort documents into folders and add highlights or notes.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
-                <share className="w-8 h-8 text-primary" />
+                <Share2 className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Share and Export</h3>
               <p className="text-gray-600">Share documents securely or export them to your preferred format.</p>
