@@ -40,9 +40,13 @@ export function FolderSidebar() {
 
   const createFolderMutation = useMutation({
     mutationFn: async (name: string) => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      if (userError) throw userError
+      if (!user) throw new Error("No user found")
+
       const { data, error } = await supabase
         .from("folders")
-        .insert([{ name }])
+        .insert([{ name, user_id: user.id }])
         .select()
         .single()
 
