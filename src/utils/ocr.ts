@@ -2,9 +2,14 @@ import { createWorker, Worker, WorkerOptions } from 'tesseract.js';
 
 export type OCRProgressCallback = (progress: number) => void;
 
+// Define the return type for the load method
+interface ConfigResult {
+  [key: string]: any;
+}
+
 // Extend the Worker type to include the missing methods
-interface TesseractWorker extends Worker {
-  load: () => Promise<void>;
+interface TesseractWorker extends Omit<Worker, 'load'> {
+  load: () => Promise<ConfigResult>;
   loadLanguage: (lang: string) => Promise<void>;
   initialize: (lang: string) => Promise<void>;
 }
@@ -13,7 +18,7 @@ export async function performOCR(
   imageUrl: string, 
   onProgress?: OCRProgressCallback
 ): Promise<string> {
-  const worker = await createWorker() as TesseractWorker;
+  const worker = await createWorker() as unknown as TesseractWorker;
 
   try {
     await worker.load();
