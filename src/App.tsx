@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createClient } from '@supabase/supabase-js';
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +12,9 @@ import DocumentViewer from './components/document/DocumentViewer';
 import Templates from './pages/Templates';
 import Settings from './pages/Settings';
 import ScanPage from './pages/ScanPage';
-import { useToast } from './hooks/use-toast';
+import LandingPage from './pages/LandingPage';
+import { Header } from './components/layout/Header';
+import { Footer } from './components/layout/Footer';
 
 const queryClient = new QueryClient();
 
@@ -23,15 +24,22 @@ function App() {
       <SessionContextProvider supabaseClient={supabase}>
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
           <Router>
-            <Routes>
-              <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/document/:id" element={<ProtectedRoute><DocumentViewer /></ProtectedRoute>} />
-              <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-              <Route path="/scan" element={<ProtectedRoute><ScanPage /></ProtectedRoute>} />
-            </Routes>
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="flex-grow pt-16">
+                <Routes>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/document/:id" element={<ProtectedRoute><DocumentViewer /></ProtectedRoute>} />
+                  <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
+                  <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                  <Route path="/scan" element={<ProtectedRoute><ScanPage /></ProtectedRoute>} />
+                </Routes>
+              </main>
+              <Footer />
+            </div>
           </Router>
           <Toaster />
         </ThemeProvider>

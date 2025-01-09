@@ -32,7 +32,7 @@ export default function Login() {
         description: "Successfully logged in",
       });
 
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       const authError = error as AuthError;
       toast({
@@ -46,7 +46,7 @@ export default function Login() {
   };
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
+    <div className="container flex h-[calc(100vh-4rem)] w-screen flex-col items-center justify-center">
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Login</CardTitle>
