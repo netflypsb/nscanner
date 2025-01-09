@@ -1,4 +1,4 @@
-import { createWorker } from 'tesseract.js';
+import { createWorker, Worker, CreateWorkerOptions } from 'tesseract.js';
 
 export type OCRProgressCallback = (progress: number) => void;
 
@@ -7,12 +7,12 @@ export async function performOCR(
   onProgress?: OCRProgressCallback
 ): Promise<string> {
   const worker = await createWorker({
-    logger: info => {
-      if (info.status === 'recognizing text') {
-        onProgress?.(info.progress);
+    logger: m => {
+      if (m.status === 'recognizing text') {
+        onProgress?.(m.progress);
       }
     },
-  });
+  } as CreateWorkerOptions);
 
   try {
     await worker.loadLanguage('eng');
