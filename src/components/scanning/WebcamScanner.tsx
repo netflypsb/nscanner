@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
 import Webcam from 'react-webcam';
-import { Camera, RotateCcw, Save, CornerUpLeft, CornerUpRight, CornerDownLeft, CornerDownRight, ToggleLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Toggle as ToggleButton } from '@/components/ui/toggle';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import BorderDetectionToggle from './BorderDetectionToggle';
+import BorderOverlay from './BorderOverlay';
+import ScannerControls from './ScannerControls';
 
 interface WebcamScannerProps {
   onCapture: (data: string) => void;
@@ -69,18 +69,11 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
 
   return (
     <div className="flex flex-col items-center">
-      {/* Smart Detection Toggle */}
-      <div className="mb-4 flex items-center gap-2">
-        <ToggleButton
-          pressed={isSmartDetectionEnabled}
-          onPressedChange={setIsSmartDetectionEnabled}
-        >
-          <ToggleLeft className="mr-2 h-4 w-4" />
-          Smart Border Detection
-        </ToggleButton>
-      </div>
+      <BorderDetectionToggle
+        enabled={isSmartDetectionEnabled}
+        onToggle={setIsSmartDetectionEnabled}
+      />
 
-      {/* Main Scanner Area */}
       <div className="relative w-full max-w-2xl aspect-video mb-4">
         {capturedImage ? (
           <div className="relative w-full h-full">
@@ -89,32 +82,11 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
               alt="Captured"
               className="w-full h-full object-contain rounded-lg"
             />
-            {/* Edge Detection Overlay */}
-            {corners.length === 4 && (
-              <svg
-                className="absolute inset-0 w-full h-full pointer-events-none"
-                style={{ filter: isAdjustingCorners ? 'none' : 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }}
-              >
-                <path
-                  d={`M ${corners[0].x}% ${corners[0].y}% L ${corners[1].x}% ${corners[1].y}% L ${corners[2].x}% ${corners[2].y}% L ${corners[3].x}% ${corners[3].y}% Z`}
-                  fill="none"
-                  stroke="rgb(var(--primary))"
-                  strokeWidth="2"
-                  className="transition-all duration-200"
-                />
-                {isAdjustingCorners && corners.map((corner, index) => (
-                  <circle
-                    key={index}
-                    cx={`${corner.x}%`}
-                    cy={`${corner.y}%`}
-                    r="6"
-                    fill="rgb(var(--primary))"
-                    className="cursor-move"
-                    onMouseDown={(e) => handleCornerDrag(index, e)}
-                  />
-                ))}
-              </svg>
-            )}
+            <BorderOverlay
+              corners={corners}
+              isAdjusting={isAdjustingCorners}
+              onCornerDrag={handleCornerDrag}
+            />
           </div>
         ) : (
           <Webcam
@@ -124,7 +96,6 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
           />
         )}
         
-        {/* Processing Indicator */}
         {isProcessing && (
           <div className="absolute inset-0 bg-background/50 flex flex-col items-center justify-center rounded-lg">
             <Progress value={65} className="w-1/2 mb-2" />
@@ -133,44 +104,16 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
         )}
       </div>
 
-      {/* Controls */}
-      <div className="flex gap-4">
-        {!capturedImage ? (
-          <Button onClick={capture} disabled={isProcessing}>
-            <Camera className="mr-2 h-4 w-4" />
-            Capture
-          </Button>
-        ) : (
-          <>
-            <Button variant="outline" onClick={retake}>
-              <RotateCcw className="mr-2 h-4 w-4" />
-              Retake
-            </Button>
-            {corners.length === 4 && (
-              <Button
-                variant="outline"
-                onClick={() => setIsAdjustingCorners(!isAdjustingCorners)}
-              >
-                {isAdjustingCorners ? (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Confirm Corners
-                  </>
-                ) : (
-                  <>
-                    <CornerUpLeft className="mr-2 h-4 w-4" />
-                    Adjust Corners
-                  </>
-                )}
-              </Button>
-            )}
-            <Button onClick={() => onCapture(capturedImage)} disabled={isProcessing}>
-              <Save className="mr-2 h-4 w-4" />
-              Save
-            </Button>
-          </>
-        )}
-      </div>
+      <ScannerControls
+        hasImage={!!capturedImage}
+        isProcessing={isProcessing}
+        hasCorners={corners.length === 4}
+        isAdjustingCorners={isAdjustingCorners}
+        onCapture={capture}
+        onRetake={retake}
+        onToggleCornerAdjustment={() => setIsAdjustingCorners(!isAdjustingCorners)}
+        onSave={() => onCapture(capturedImage!)}
+      />
     </div>
   );
 };
