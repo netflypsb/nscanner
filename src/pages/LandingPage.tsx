@@ -8,10 +8,10 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary/80 to-primary text-white py-24 px-4">
+      <section className="bg-gradient-to-r from-primary/90 to-primary text-white py-24 px-4">
         <div className="container mx-auto flex flex-col items-center text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Transform Your Document Workflow with Ease</h1>
-          <p className="text-xl mb-8 max-w-2xl">Scan, organize, annotate, and share documents effortlessly—all in one intuitive platform.</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Transform Your Document Workflow with Ease</h1>
+          <p className="text-xl mb-8 max-w-2xl text-white/90">Scan, organize, annotate, and share documents effortlessly—all in one intuitive platform.</p>
           <div className="space-x-4">
             <Button 
               onClick={() => navigate("/register")}
@@ -34,30 +34,30 @@ export default function LandingPage() {
       </section>
 
       {/* How to Use Section */}
-      <section className="py-16 px-4 bg-gray-50">
+      <section className="py-16 px-4 bg-secondary">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-foreground">How It Works</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
                 <Scan className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Scan Your Documents</h3>
-              <p className="text-gray-600">Quickly digitize paper documents using your camera or uploaded files.</p>
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Scan Your Documents</h3>
+              <p className="text-muted-foreground">Quickly digitize paper documents using your camera or uploaded files.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
                 <FolderOpen className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Organize and Annotate</h3>
-              <p className="text-gray-600">Effortlessly sort documents into folders and add highlights or notes.</p>
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Organize and Annotate</h3>
+              <p className="text-muted-foreground">Effortlessly sort documents into folders and add highlights or notes.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
                 <Share2 className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Share and Export</h3>
-              <p className="text-gray-600">Share documents securely or export them to your preferred format.</p>
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Share and Export</h3>
+              <p className="text-muted-foreground">Share documents securely or export them to your preferred format.</p>
             </div>
           </div>
         </div>
