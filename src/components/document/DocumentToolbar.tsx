@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RotateCw, RotateCcw, Crop, Pen, Highlighter, FileText } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Progress } from "@/components/ui/progress";
 
 interface DocumentToolbarProps {
   onRotateLeft: () => void;
@@ -13,6 +14,8 @@ interface DocumentToolbarProps {
 
 const DocumentToolbar = ({ onRotateLeft, onRotateRight, documentId }: DocumentToolbarProps) => {
   const { toast } = useToast();
+  const [ocrProgress, setOcrProgress] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleOCR = async () => {
     if (!documentId) {
@@ -25,6 +28,9 @@ const DocumentToolbar = ({ onRotateLeft, onRotateRight, documentId }: DocumentTo
     }
 
     try {
+      setIsProcessing(true);
+      setOcrProgress(0);
+
       toast({
         title: "Processing",
         description: "Extracting text from document...",
@@ -50,6 +56,9 @@ const DocumentToolbar = ({ onRotateLeft, onRotateRight, documentId }: DocumentTo
         description: "Failed to process document",
         variant: "destructive",
       });
+    } finally {
+      setIsProcessing(false);
+      setOcrProgress(0);
     }
   };
 
@@ -118,6 +127,7 @@ const DocumentToolbar = ({ onRotateLeft, onRotateRight, documentId }: DocumentTo
                 variant="outline" 
                 size="icon"
                 onClick={handleOCR}
+                disabled={isProcessing}
               >
                 <FileText className="h-4 w-4" />
               </Button>
@@ -125,6 +135,12 @@ const DocumentToolbar = ({ onRotateLeft, onRotateRight, documentId }: DocumentTo
             <TooltipContent>Extract Text (OCR)</TooltipContent>
           </Tooltip>
         </TooltipProvider>
+
+        {isProcessing && (
+          <div className="flex-1 max-w-xs ml-4">
+            <Progress value={ocrProgress * 100} className="w-full" />
+          </div>
+        )}
       </div>
     </div>
   );
