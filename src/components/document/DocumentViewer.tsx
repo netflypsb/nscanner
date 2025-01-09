@@ -56,17 +56,21 @@ const DocumentViewer = () => {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      return data;
+      return data as unknown as Annotation[];
     },
   });
 
   const addAnnotationMutation = useMutation({
     mutationFn: async (annotation: Omit<Annotation, 'id'>) => {
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) throw new Error('User not authenticated');
+
       const { data, error } = await supabase
         .from('annotations')
         .insert([
           {
             document_id: documentId,
+            user_id: user.data.user.id,
             type: annotation.type,
             content: annotation.content,
           },
