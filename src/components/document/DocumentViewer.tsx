@@ -3,9 +3,10 @@ import { useParams } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Download, Share2, ZoomIn, ZoomOut } from 'lucide-react';
+import { ZoomIn, ZoomOut } from 'lucide-react';
 import DocumentToolbar from './DocumentToolbar';
 import DocumentSidebar from './DocumentSidebar';
+import ExportDialog from './ExportDialog';
 import { cn } from '@/lib/utils';
 import { supabase } from "@/integrations/supabase/client";
 
@@ -123,23 +124,11 @@ const DocumentViewer = () => {
         {/* Bottom Bar */}
         <div className="border-t bg-background p-4 flex justify-between items-center">
           <div className="flex gap-2">
-            <Button variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Export as PDF
-            </Button>
-            <Button variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Export as Word
-            </Button>
-            <Button variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Export as JPG
-            </Button>
+            <ExportDialog 
+              documentId={documentId || ''} 
+              documentText={document?.ocr_text || ''}
+            />
           </div>
-          <Button>
-            <Share2 className="mr-2 h-4 w-4" />
-            Share
-          </Button>
         </div>
       </main>
     </div>
