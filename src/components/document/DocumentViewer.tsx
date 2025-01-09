@@ -1,16 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { RotateCw, RotateCcw, Crop, Pen, Highlighter, FileText, Download, Share2, ZoomIn, ZoomOut } from 'lucide-react';
+import { Download, Share2, ZoomIn, ZoomOut } from 'lucide-react';
 import DocumentToolbar from './DocumentToolbar';
 import DocumentSidebar from './DocumentSidebar';
 import { cn } from '@/lib/utils';
+import { supabase } from "@/integrations/supabase/client";
 
 const DocumentViewer = () => {
+  const { id: documentId } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(100);
   const [rotation, setRotation] = useState(0);
+  const [document, setDocument] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchDocument = async () => {
+      if (!documentId) return;
+
+      const { data, error } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('id', documentId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching document:', error);
+        return;
+      }
+
+      setDocument(data);
+    };
+
+    fetchDocument();
+  }, [documentId]);
 
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 10, 200));
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 10, 50));
@@ -24,6 +49,7 @@ const DocumentViewer = () => {
         <DocumentToolbar 
           onRotateLeft={handleRotateLeft}
           onRotateRight={handleRotateRight}
+          documentId={documentId}
         />
 
         {/* Main Content Area */}
@@ -91,7 +117,7 @@ const DocumentViewer = () => {
           </div>
 
           {/* Right Sidebar */}
-          <DocumentSidebar />
+          <DocumentSidebar document={document} />
         </div>
 
         {/* Bottom Bar */}
