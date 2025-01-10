@@ -26,20 +26,25 @@ const ScannerControls = ({
   return (
     <div className="flex gap-4">
       {!hasImage ? (
+        // Show the Capture button if no image is captured
         <Button onClick={onCapture} disabled={isProcessing}>
           <Camera className="mr-2 h-4 w-4" />
           Capture
         </Button>
       ) : (
         <>
-          <Button variant="outline" onClick={onRetake}>
+          {/* Retake button */}
+          <Button variant="outline" onClick={onRetake} disabled={isProcessing}>
             <RotateCcw className="mr-2 h-4 w-4" />
             Retake
           </Button>
+
+          {/* Adjust Corners button */}
           {hasCorners && (
             <Button
               variant="outline"
               onClick={onToggleCornerAdjustment}
+              disabled={isProcessing}
             >
               {isAdjustingCorners ? (
                 <>
@@ -54,6 +59,8 @@ const ScannerControls = ({
               )}
             </Button>
           )}
+
+          {/* Save button */}
           <Button onClick={onSave} disabled={isProcessing}>
             <Save className="mr-2 h-4 w-4" />
             Save
