@@ -20,7 +20,7 @@ export default function LandingPage() {
             <Button
               onClick={() => navigate("/register")}
               size="lg"
-              variant="primary"
+              variant="default"
               className="bg-yellow-400 text-gray-800 hover:bg-yellow-500 hover:text-gray-900"
             >
               Get Started for Free
