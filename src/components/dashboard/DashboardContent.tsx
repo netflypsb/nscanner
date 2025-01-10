@@ -80,30 +80,31 @@ export function DashboardContent() {
   }
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 bg-steampunk-gradient min-h-screen">
-      <Alert className="mb-4 border-brass bg-steampunk-light/50 text-brass-light">
-        <AlertDescription>
-          OCR processing: Invoice-2024-001.pdf (2/3 pages complete)
-        </AlertDescription>
-      </Alert>
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 bg-white min-h-screen">
+      {documents && documents.length > 0 && (
+        <Alert className="mb-4 border-[#0EA5E9] bg-[#D3E4FD] text-black">
+          <AlertDescription>
+            {`${documents.length} document${documents.length === 1 ? '' : 's'} available in your library`}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h2 className="text-3xl font-cinzel text-brass tracking-wide">Dashboard</h2>
-          <p className="text-copper-light text-sm">Welcome to your document management center</p>
+          <h2 className="text-3xl font-bold text-black tracking-wide">Dashboard</h2>
+          <p className="text-gray-600 text-sm">Welcome to your document management center</p>
         </div>
       </div>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h3 className="text-xl font-cinzel text-brass-light">Documents</h3>
+            <h3 className="text-xl font-bold text-black">Documents</h3>
             {selectedDocs.length > 0 && (
               <button
                 onClick={handleDeleteSelected}
-                className="px-4 py-2 text-sm bg-copper/20 border border-copper text-copper-light
-                         hover:bg-copper/30 hover:border-copper-light hover:text-brass-light
-                         transition-all duration-300 rounded-md animate-glow"
+                className="px-4 py-2 text-sm bg-white border border-black text-black
+                         hover:bg-black/5 transition-all duration-300 rounded-md"
               >
                 Delete Selected ({selectedDocs.length})
               </button>
@@ -113,40 +114,39 @@ export function DashboardContent() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
-            <div className="text-brass-light">Loading documents...</div>
+            <div className="text-black">Loading documents...</div>
           ) : documents?.length === 0 ? (
-            <div className="text-brass-light">No documents found</div>
+            <div className="text-black">No documents found</div>
           ) : (
             documents?.map((doc) => (
               <Card 
                 key={doc.id} 
-                className="group relative border-copper/50 bg-steampunk-light/80 
-                         hover:border-brass transition-all duration-300
-                         hover:shadow-[0_0_15px_rgba(218,165,32,0.3)]"
+                className="group relative border-gray-200 bg-white 
+                         hover:border-[#0EA5E9] transition-all duration-300
+                         hover:shadow-lg"
               >
                 <div className="absolute top-2 left-2 z-10">
                   <Checkbox
                     checked={selectedDocs.includes(doc.id)}
                     onCheckedChange={() => handleSelectDocument(doc.id)}
-                    className="border-copper data-[state=checked]:border-brass 
-                             data-[state=checked]:bg-brass"
+                    className="border-gray-300 data-[state=checked]:border-[#0EA5E9] 
+                             data-[state=checked]:bg-[#0EA5E9]"
                   />
                 </div>
                 <CardHeader className="p-4">
-                  <CardTitle className="text-sm font-medium text-brass-light">
+                  <CardTitle className="text-sm font-medium text-black">
                     {doc.name}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
-                  <div className="aspect-[3/4] rounded-lg border border-copper/30 bg-steampunk-dark/50
-                               group-hover:border-brass/30 transition-all duration-300">
+                  <div className="aspect-[3/4] rounded-lg border border-gray-200 bg-gray-50
+                               group-hover:border-[#0EA5E9]/30 transition-all duration-300">
                     <div className="h-full w-full flex items-center justify-center">
-                      <FileText className="h-12 w-12 text-copper-light group-hover:text-brass-light
+                      <FileText className="h-12 w-12 text-gray-400 group-hover:text-[#0EA5E9]
                                        transition-all duration-300" />
                     </div>
                   </div>
-                  <p className="mt-2 text-sm text-copper-light group-hover:text-brass-light
-                             transition-all duration-300">
+                  <p className="mt-2 text-sm text-gray-600">
                     Last modified: {doc.modifiedDate}
                   </p>
                 </CardContent>

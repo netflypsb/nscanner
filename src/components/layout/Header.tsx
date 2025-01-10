@@ -24,19 +24,33 @@ export const Header = () => {
         <nav className="flex items-center gap-4">
           {session ? (
             <>
-              <Button onClick={() => navigate("/dashboard")}>
+              <Button 
+                onClick={() => navigate("/dashboard")}
+                className="text-black border-black hover:bg-black/5"
+              >
                 Dashboard
               </Button>
-              <Button variant="outline" onClick={handleLogout}>
+              <Button 
+                variant="outline" 
+                onClick={handleLogout}
+                className="border-black text-black hover:bg-black/5"
+              >
                 Logout
               </Button>
             </>
           ) : (
             <>
-              <Button variant="outline" onClick={() => navigate("/login")}>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate("/login")}
+                className="border-black text-black hover:bg-black/5"
+              >
                 Login
               </Button>
-              <Button onClick={() => navigate("/register")}>
+              <Button 
+                onClick={() => navigate("/register")}
+                className="text-black border-black hover:bg-black/5"
+              >
                 Register
               </Button>
             </>
