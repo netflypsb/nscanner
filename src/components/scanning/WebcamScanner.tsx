@@ -1,11 +1,10 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import Webcam from 'react-webcam';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import BorderDetectionToggle from './BorderDetectionToggle';
-import BorderOverlay from './BorderOverlay';
 import ScannerControls from './ScannerControls';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import CameraSelect from './CameraSelect';
+import DocumentPreview from './DocumentPreview';
 import { supabase } from "@/integrations/supabase/client";
 
 interface WebcamScannerProps {
@@ -82,7 +81,6 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
     try {
       setIsProcessing(true);
       
-      // Convert base64 to blob
       const base64Data = capturedImage.split(',')[1];
       const byteCharacters = atob(base64Data);
       const byteNumbers = new Array(byteCharacters.length);
@@ -93,22 +91,17 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
       
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: 'image/jpeg' });
-      
-      // Generate unique filename
       const filename = `scan_${Date.now()}.jpg`;
       
-      // Upload to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('documents')
         .upload(filename, blob);
 
       if (uploadError) throw uploadError;
 
-      // Get the user's ID
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Save document metadata to database
       const { error: dbError } = await supabase
         .from('documents')
         .insert({
@@ -126,7 +119,6 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
         description: "Document saved successfully",
       });
 
-      // Reset the scanner
       retake();
     } catch (error) {
       console.error('Error saving document:', error);
@@ -147,48 +139,19 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
           enabled={isSmartDetectionEnabled}
           onToggle={setIsSmartDetectionEnabled}
         />
-        <Select value={facingMode} onValueChange={handleCameraChange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select Camera" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="environment">Back Camera</SelectItem>
-            <SelectItem value="user">Front Camera</SelectItem>
-          </SelectContent>
-        </Select>
+        <CameraSelect value={facingMode} onChange={handleCameraChange} />
       </div>
 
       <div className="relative w-full max-w-2xl aspect-video mb-4">
-        {capturedImage ? (
-          <div className="relative w-full h-full">
-            <img
-              src={capturedImage}
-              alt="Captured"
-              className="w-full h-full object-contain rounded-lg"
-            />
-            <BorderOverlay
-              corners={corners}
-              isAdjusting={isAdjustingCorners}
-              onCornerDrag={handleCornerDrag}
-            />
-          </div>
-        ) : (
-          <Webcam
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            className="w-full h-full rounded-lg"
-            videoConstraints={{
-              facingMode: facingMode
-            }}
-          />
-        )}
-        
-        {isProcessing && (
-          <div className="absolute inset-0 bg-background/50 flex flex-col items-center justify-center rounded-lg">
-            <Progress value={65} className="w-1/2 mb-2" />
-            <p className="text-sm text-muted-foreground">Processing document...</p>
-          </div>
-        )}
+        <DocumentPreview
+          webcamRef={webcamRef}
+          capturedImage={capturedImage}
+          corners={corners}
+          isAdjustingCorners={isAdjustingCorners}
+          isProcessing={isProcessing}
+          facingMode={facingMode}
+          onCornerDrag={handleCornerDrag}
+        />
       </div>
 
       <ScannerControls
