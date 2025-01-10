@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Home, FileText, Camera, Layout, Settings, FolderPlus } from "lucide-react";
+import { Home, FileText, Camera, Layout, Settings, FolderPlus, Folder } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
