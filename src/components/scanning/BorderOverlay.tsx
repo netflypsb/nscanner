@@ -19,6 +19,7 @@ const BorderOverlay = ({ corners, isAdjusting, onCornerDrag }: BorderOverlayProp
       className="absolute inset-0 w-full h-full pointer-events-none"
       style={{ filter: isAdjusting ? 'none' : 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }}
     >
+      {/* Draw the detected border */}
       <path
         d={`M ${corners[0].x}% ${corners[0].y}% L ${corners[1].x}% ${corners[1].y}% L ${corners[2].x}% ${corners[2].y}% L ${corners[3].x}% ${corners[3].y}% Z`}
         fill="none"
@@ -26,17 +27,20 @@ const BorderOverlay = ({ corners, isAdjusting, onCornerDrag }: BorderOverlayProp
         strokeWidth="2"
         className="transition-all duration-200"
       />
-      {isAdjusting && corners.map((corner, index) => (
-        <circle
-          key={index}
-          cx={`${corner.x}%`}
-          cy={`${corner.y}%`}
-          r="6"
-          fill="rgb(var(--primary))"
-          className="cursor-move"
-          onMouseDown={(e) => onCornerDrag(index, e)}
-        />
-      ))}
+
+      {/* Add draggable handles for corners if adjustments are enabled */}
+      {isAdjusting &&
+        corners.map((corner, index) => (
+          <circle
+            key={index}
+            cx={`${corner.x}%`}
+            cy={`${corner.y}%`}
+            r="6"
+            fill="rgb(var(--primary))"
+            className="cursor-move"
+            onMouseDown={(e) => onCornerDrag(index, e)}
+          />
+        ))}
     </svg>
   );
 };
