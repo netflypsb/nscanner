@@ -15,6 +15,7 @@ import ScanPage from './pages/ScanPage';
 import LandingPage from './pages/LandingPage';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
+import { useToast } from './hooks/use-toast';
 
 const queryClient = new QueryClient();
 
@@ -51,12 +52,30 @@ function App() {
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-      setIsLoading(false);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Auth error:', error);
+          toast({
+            title: "Authentication Error",
+            description: "Please log in again",
+            variant: "destructive",
+          });
+          setIsAuthenticated(false);
+        } else {
+          setIsAuthenticated(!!session);
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     checkAuth();
@@ -67,7 +86,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [toast]);
 
   if (isLoading) {
     return <div>Loading...</div>;
