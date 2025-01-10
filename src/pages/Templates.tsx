@@ -1,9 +1,14 @@
 import { useToast } from "@/components/ui/use-toast"
 import { TemplateCard } from "@/components/templates/TemplateCard"
 import { NewTemplateDialog } from "@/components/templates/NewTemplateDialog"
+import { DynamicFieldEditor } from "@/components/templates/DynamicFieldEditor"
+import { DocumentGenerator } from "@/components/templates/DocumentGenerator"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { supabase } from "@/integrations/supabase/client"
 import { Loader2 } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface Template {
   id: string
@@ -97,15 +102,37 @@ export default function Templates() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {templates?.map((template) => (
-            <TemplateCard
-              key={template.id}
-              id={template.id}
-              name={template.name}
-              description={template.description || ""}
-              thumbnail="/placeholder.svg"
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
+            <Dialog key={template.id}>
+              <DialogTrigger asChild>
+                <div>
+                  <TemplateCard
+                    id={template.id}
+                    name={template.name}
+                    description={template.description || ""}
+                    thumbnail="/placeholder.svg"
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                </div>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl">
+                <DialogHeader>
+                  <DialogTitle>{template.name}</DialogTitle>
+                </DialogHeader>
+                <Tabs defaultValue="fields" className="w-full">
+                  <TabsList>
+                    <TabsTrigger value="fields">Dynamic Fields</TabsTrigger>
+                    <TabsTrigger value="generate">Generate Document</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="fields">
+                    <DynamicFieldEditor templateId={template.id} />
+                  </TabsContent>
+                  <TabsContent value="generate">
+                    <DocumentGenerator templateId={template.id} />
+                  </TabsContent>
+                </Tabs>
+              </DialogContent>
+            </Dialog>
           ))}
         </div>
       )}
