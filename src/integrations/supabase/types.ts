@@ -97,6 +97,47 @@ export type Database = {
           },
         ]
       }
+      dynamic_fields: {
+        Row: {
+          created_at: string | null
+          default_value: string | null
+          id: string
+          name: string
+          required: boolean | null
+          template_id: string | null
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          default_value?: string | null
+          id?: string
+          name: string
+          required?: boolean | null
+          template_id?: string | null
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          default_value?: string | null
+          id?: string
+          name?: string
+          required?: boolean | null
+          template_id?: string | null
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dynamic_fields_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       folders: {
         Row: {
           created_at: string | null
@@ -118,6 +159,83 @@ export type Database = {
           name?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      generated_documents: {
+        Row: {
+          created_at: string | null
+          data: Json
+          file_path: string
+          id: string
+          last_accessed_at: string | null
+          status: string | null
+          template_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          data: Json
+          file_path: string
+          id?: string
+          last_accessed_at?: string | null
+          status?: string | null
+          template_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json
+          file_path?: string
+          id?: string
+          last_accessed_at?: string | null
+          status?: string | null
+          template_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_documents_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      templates: {
+        Row: {
+          content: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_current: boolean | null
+          name: string
+          updated_at: string | null
+          user_id: string
+          version: number | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_current?: boolean | null
+          name: string
+          updated_at?: string | null
+          user_id: string
+          version?: number | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_current?: boolean | null
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+          version?: number | null
         }
         Relationships: []
       }
