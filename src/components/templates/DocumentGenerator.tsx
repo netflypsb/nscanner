@@ -52,15 +52,18 @@ export function DocumentGenerator({ templateId }: DocumentGeneratorProps) {
 
   const generateDocumentMutation = useMutation({
     mutationFn: async (values: Record<string, string>) => {
+      // Get the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
       const { data, error } = await supabase
         .from('generated_documents')
-        .insert([
-          {
-            template_id: templateId,
-            data: values,
-            file_path: `generated/${templateId}/${Date.now()}.txt`, // You might want to generate a proper file path
-          },
-        ])
+        .insert({
+          template_id: templateId,
+          user_id: user.id,
+          data: values as unknown as Json,
+          file_path: `generated/${templateId}/${Date.now()}.txt`, // You might want to generate a proper file path
+        })
         .select()
         .single();
 
