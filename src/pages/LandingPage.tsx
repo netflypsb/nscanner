@@ -20,16 +20,16 @@ export default function LandingPage() {
             <Button
               onClick={() => navigate("/register")}
               size="lg"
-              variant="secondary"
-              className="bg-white text-indigo-600 hover:bg-gray-100"
+              variant="primary"
+              className="bg-yellow-400 text-gray-800 hover:bg-yellow-500 hover:text-gray-900"
             >
               Get Started for Free
             </Button>
             <Button
               onClick={() => navigate("/login")}
               size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-gray-200 hover:text-indigo-600"
+              variant="secondary"
+              className="bg-gray-200 text-indigo-800 border-indigo-600 hover:bg-gray-300 hover:text-indigo-900"
             >
               Learn More
             </Button>
