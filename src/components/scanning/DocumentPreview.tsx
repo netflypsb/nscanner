@@ -26,11 +26,13 @@ const DocumentPreview = ({
     <div className="relative w-full h-full">
       {capturedImage ? (
         <>
+          {/* Display captured image */}
           <img
             src={capturedImage}
             alt="Captured"
             className="w-full h-full object-contain rounded-lg"
           />
+          {/* Overlay the border for edge detection */}
           <BorderOverlay
             corners={corners}
             isAdjusting={isAdjustingCorners}
@@ -38,15 +40,19 @@ const DocumentPreview = ({
           />
         </>
       ) : (
-        <Webcam
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          className="w-full h-full rounded-lg"
-          videoConstraints={{
-            facingMode
-          }}
-        />
+        <>
+          {/* Display live webcam feed if no captured image */}
+          <Webcam
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            className="w-full h-full rounded-lg"
+            videoConstraints={{
+              facingMode,
+            }}
+          />
+        </>
       )}
+      {/* Show processing overlay when processing */}
       <ProcessingOverlay isVisible={isProcessing} />
     </div>
   );
