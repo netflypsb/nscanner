@@ -35,15 +35,17 @@ export function NewTemplateDialog() {
 
   const createTemplateMutation = useMutation({
     mutationFn: async (data: FormData) => {
+      const { data: userData, error: userError } = await supabase.auth.getUser()
+      if (userError) throw userError
+
       const { error } = await supabase
         .from("templates")
-        .insert([
-          {
-            name: data.name,
-            description: data.description,
-            content: data.content,
-          },
-        ])
+        .insert({
+          name: data.name,
+          description: data.description,
+          content: data.content,
+          user_id: userData.user.id,
+        })
 
       if (error) throw error
     },
