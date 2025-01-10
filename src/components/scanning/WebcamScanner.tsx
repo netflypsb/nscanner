@@ -5,7 +5,8 @@ import BorderDetectionToggle from './BorderDetectionToggle';
 import ScannerControls from './ScannerControls';
 import CameraSelect from './CameraSelect';
 import DocumentPreview from './DocumentPreview';
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
+import cv from 'opencv.js';
 
 interface WebcamScannerProps {
   onCapture: (data: string) => void;
@@ -26,26 +27,103 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
   const [facingMode, setFacingMode] = useState<"user" | "environment">("environment");
   const { toast } = useToast();
 
+  const detectEdges = async (imageSrc: string) => {
+    const img = new Image();
+    img.src = imageSrc;
+    await img.decode();
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx?.drawImage(img, 0, 0);
+
+    const src = cv.imread(canvas);
+    const gray = new cv.Mat();
+    const edges = new cv.Mat();
+
+    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+    cv.GaussianBlur(gray, gray, new cv.Size(5, 5), 0);
+    cv.Canny(gray, edges, 50, 150);
+
+    const contours = new cv.MatVector();
+    const hierarchy = new cv.Mat();
+    cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+    let largestContour = null;
+    let maxArea = 0;
+
+    for (let i = 0; i < contours.size(); i++) {
+      const area = cv.contourArea(contours.get(i));
+      if (area > maxArea) {
+        maxArea = area;
+        largestContour = contours.get(i);
+      }
+    }
+
+    if (largestContour) {
+      const approx = new cv.Mat();
+      cv.approxPolyDP(largestContour, approx, 0.02 * cv.arcLength(largestContour, true), true);
+
+      if (approx.rows === 4) {
+        const detectedCorners = [];
+        for (let i = 0; i < approx.rows; i++) {
+          const point = approx.data32S.slice(i * 2, i * 2 + 2);
+          detectedCorners.push({ x: (point[0] / src.cols) * 100, y: (point[1] / src.rows) * 100 });
+        }
+        setCorners(detectedCorners);
+      }
+
+      approx.delete();
+    }
+
+    src.delete();
+    gray.delete();
+    edges.delete();
+    contours.delete();
+    hierarchy.delete();
+  };
+
+  const enhanceImage = (imageSrc: string): string => {
+    const img = new Image();
+    img.src = imageSrc;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    ctx?.drawImage(img, 0, 0);
+    const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
+
+    if (imageData && ctx) {
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        imageData.data[i] = Math.min(imageData.data[i] * 1.2 + 30, 255);
+        imageData.data[i + 1] = Math.min(imageData.data[i + 1] * 1.2 + 30, 255);
+        imageData.data[i + 2] = Math.min(imageData.data[i + 2] * 1.2 + 30, 255);
+      }
+      ctx.putImageData(imageData, 0, 0);
+    }
+
+    return canvas.toDataURL();
+  };
+
   const capture = async () => {
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
       setIsProcessing(true);
       setCapturedImage(imageSrc);
-      
+
       if (isSmartDetectionEnabled) {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setCorners([
-          { x: 20, y: 20 },
-          { x: 80, y: 20 },
-          { x: 80, y: 80 },
-          { x: 20, y: 80 }
-        ]);
+        await detectEdges(imageSrc);
         toast({
           title: "Border Detection Complete",
           description: "You can now adjust the corners manually if needed.",
         });
       }
-      
+
+      const enhancedImage = enhanceImage(imageSrc);
+      setCapturedImage(enhancedImage);
       setIsProcessing(false);
     }
   };
@@ -58,11 +136,11 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
 
   const handleCornerDrag = (index: number, e: React.MouseEvent) => {
     if (!isAdjustingCorners) return;
-    
+
     const rect = (e.target as HTMLElement).getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    
+
     const newCorners = [...corners];
     newCorners[index] = { x, y };
     setCorners(newCorners);
@@ -80,19 +158,19 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
 
     try {
       setIsProcessing(true);
-      
+
       const base64Data = capturedImage.split(',')[1];
       const byteCharacters = atob(base64Data);
       const byteNumbers = new Array(byteCharacters.length);
-      
+
       for (let i = 0; i < byteCharacters.length; i++) {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
-      
+
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: 'image/jpeg' });
       const filename = `scan_${Date.now()}.jpg`;
-      
+
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('documents')
         .upload(filename, blob);
