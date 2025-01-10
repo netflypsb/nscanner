@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import BorderDetectionToggle from './BorderDetectionToggle';
 import BorderOverlay from './BorderOverlay';
 import ScannerControls from './ScannerControls';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface WebcamScannerProps {
   onCapture: (data: string) => void;
@@ -22,6 +23,7 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [corners, setCorners] = useState<Corner[]>([]);
   const [isAdjustingCorners, setIsAdjustingCorners] = useState(false);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("environment");
   const { toast } = useToast();
 
   const capture = async () => {
@@ -31,7 +33,6 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
       setCapturedImage(imageSrc);
       
       if (isSmartDetectionEnabled) {
-        // Simulate edge detection (replace with actual edge detection logic)
         await new Promise(resolve => setTimeout(resolve, 1500));
         setCorners([
           { x: 20, y: 20 },
@@ -67,12 +68,30 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
     setCorners(newCorners);
   };
 
+  const handleCameraChange = (value: string) => {
+    setFacingMode(value as "user" | "environment");
+    if (capturedImage) {
+      retake();
+    }
+  };
+
   return (
     <div className="flex flex-col items-center">
-      <BorderDetectionToggle
-        enabled={isSmartDetectionEnabled}
-        onToggle={setIsSmartDetectionEnabled}
-      />
+      <div className="w-full max-w-2xl mb-4 flex justify-between items-center">
+        <BorderDetectionToggle
+          enabled={isSmartDetectionEnabled}
+          onToggle={setIsSmartDetectionEnabled}
+        />
+        <Select value={facingMode} onValueChange={handleCameraChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select Camera" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="environment">Back Camera</SelectItem>
+            <SelectItem value="user">Front Camera</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="relative w-full max-w-2xl aspect-video mb-4">
         {capturedImage ? (
@@ -93,6 +112,9 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             className="w-full h-full rounded-lg"
+            videoConstraints={{
+              facingMode: facingMode
+            }}
           />
         )}
         

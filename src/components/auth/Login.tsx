@@ -68,7 +68,12 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <Button className="w-full" type="submit" disabled={isLoading}>
+            <Button 
+              className="w-full border-black text-black hover:bg-black hover:text-white transition-colors" 
+              type="submit" 
+              variant="outline"
+              disabled={isLoading}
+            >
               {isLoading ? "Loading..." : "Login"}
             </Button>
             <p className="text-sm text-center text-muted-foreground">
