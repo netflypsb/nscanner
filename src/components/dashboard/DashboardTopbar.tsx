@@ -24,13 +24,17 @@ export function DashboardTopbar() {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
+      // Clear any local storage or state if needed
+      localStorage.clear();
+      
       toast({
         title: "Success",
         description: "Successfully logged out",
       });
       
-      navigate("/login");
+      navigate("/login", { replace: true });
     } catch (error) {
+      console.error("Logout error:", error);
       toast({
         title: "Error",
         description: "Failed to log out",

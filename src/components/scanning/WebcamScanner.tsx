@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
@@ -6,6 +6,7 @@ import BorderDetectionToggle from './BorderDetectionToggle';
 import BorderOverlay from './BorderOverlay';
 import ScannerControls from './ScannerControls';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
 
 interface WebcamScannerProps {
   onCapture: (data: string) => void;
@@ -75,6 +76,70 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
     }
   };
 
+  const saveDocument = async () => {
+    if (!capturedImage) return;
+
+    try {
+      setIsProcessing(true);
+      
+      // Convert base64 to blob
+      const base64Data = capturedImage.split(',')[1];
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/jpeg' });
+      
+      // Generate unique filename
+      const filename = `scan_${Date.now()}.jpg`;
+      
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(filename, blob);
+
+      if (uploadError) throw uploadError;
+
+      // Get the user's ID
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      // Save document metadata to database
+      const { error: dbError } = await supabase
+        .from('documents')
+        .insert({
+          name: filename,
+          file_path: filename,
+          content_type: 'image/jpeg',
+          size: blob.size,
+          user_id: user.id,
+        });
+
+      if (dbError) throw dbError;
+
+      toast({
+        title: "Success",
+        description: "Document saved successfully",
+      });
+
+      // Reset the scanner
+      retake();
+    } catch (error) {
+      console.error('Error saving document:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save document",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center">
       <div className="w-full max-w-2xl mb-4 flex justify-between items-center">
@@ -121,7 +186,7 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
         {isProcessing && (
           <div className="absolute inset-0 bg-background/50 flex flex-col items-center justify-center rounded-lg">
             <Progress value={65} className="w-1/2 mb-2" />
-            <p className="text-sm text-muted-foreground">Detecting borders...</p>
+            <p className="text-sm text-muted-foreground">Processing document...</p>
           </div>
         )}
       </div>
@@ -134,7 +199,7 @@ const WebcamScanner = ({ onCapture }: WebcamScannerProps) => {
         onCapture={capture}
         onRetake={retake}
         onToggleCornerAdjustment={() => setIsAdjustingCorners(!isAdjustingCorners)}
-        onSave={() => onCapture(capturedImage!)}
+        onSave={saveDocument}
       />
     </div>
   );
