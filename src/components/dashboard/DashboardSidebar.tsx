@@ -1,5 +1,5 @@
-import React from "react";
-import { Home, FileText, Camera, Layout, Settings, Folder } from "lucide-react";
+import React, { useState } from "react";
+import { Home, FileText, Camera, Layout, Settings, FolderPlus } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -11,6 +11,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const menuItems = [
   { title: "Home", icon: Home, url: "/" },
@@ -20,14 +22,19 @@ const menuItems = [
   { title: "Settings", icon: Settings, url: "/settings" },
 ];
 
-const folders = [
-  { id: "1", name: "Work" },
-  { id: "2", name: "Personal" },
-  { id: "3", name: "Archived" },
-];
-
 export function DashboardSidebar() {
   const location = useLocation();
+  const [folders, setFolders] = useState<string[]>([]);
+  const [newFolderName, setNewFolderName] = useState<string>("");
+  const [showInput, setShowInput] = useState<boolean>(false);
+
+  const handleAddFolder = () => {
+    if (newFolderName.trim()) {
+      setFolders((prev) => [...prev, newFolderName.trim()]);
+      setNewFolderName("");
+      setShowInput(false);
+    }
+  };
 
   return (
     <Sidebar>
@@ -55,21 +62,47 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Folder Sidebar */}
+        {/* Folders Section */}
         <SidebarGroup>
           <SidebarGroupLabel>Folders</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {folders.map((folder) => (
-                <SidebarMenuItem key={folder.id}>
-                  <SidebarMenuButton asChild tooltip={folder.name}>
-                    <Link to={`/folders/${folder.id}`} className="flex items-center gap-2">
+              {folders.map((folder, index) => (
+                <SidebarMenuItem key={index}>
+                  <SidebarMenuButton asChild tooltip={folder}>
+                    <div className="flex items-center gap-2">
                       <Folder className="h-4 w-4" />
-                      <span>{folder.name}</span>
-                    </Link>
+                      <span>{folder}</span>
+                    </div>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              {showInput ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={newFolderName}
+                    onChange={(e) => setNewFolderName(e.target.value)}
+                    placeholder="Folder name"
+                    className="w-full"
+                    onKeyDown={(e) => e.key === "Enter" && handleAddFolder()}
+                  />
+                  <Button variant="ghost" onClick={handleAddFolder}>
+                    Add
+                  </Button>
+                </div>
+              ) : (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => setShowInput(true)}
+                    tooltip="Add Folder"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FolderPlus className="h-4 w-4" />
+                      <span>Add Folder</span>
+                    </div>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
